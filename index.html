@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404ffice - The Time-Traveling Intranet</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=VT323&family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+
+    <style>
+        /* Base Variables (2020s Theme) */
+        :root {
+            --bg-color: #f3f4f6;
+            --text-color: #111827;
+            --primary-color: #4f46e5;
+            --secondary-color: #9333ea;
+            --accent-color: #eab308;
+            --font-family: 'Inter', sans-serif;
+            --border-radius: 0.5rem;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --widget-bg: white;
+            --header-bg: rgba(255, 255, 255, 0.8);
+            --slider-thumb-bg: var(--primary-color);
+            --header-text-color: var(--text-color); /* Default for 2020s */
+            --button-bg: var(--primary-color);
+            --button-text: white;
+            --button-hover-bg: var(--secondary-color);
+            --input-bg: white;
+            --input-border: #d1d5db;
+        }
+
+        /* 1980s Theme */
+        .theme-1980s {
+            --bg-color: #0d0221;
+            --text-color: #00f7ff; /* Neon Cyan */
+            --primary-color: #ff00ff; /* Neon Magenta */
+            --secondary-color: #00f7ff; /* Neon Cyan */
+            --accent-color: #faff00; /* Neon Yellow */
+            --font-family: 'VT323', monospace;
+            --border-radius: 0;
+            --shadow: 0 0 10px var(--primary-color);
+            --widget-bg: #261a3b; /* Darker Purple */
+            --header-bg: #1d122b; /* Even Darker Purple */
+            --slider-thumb-bg: var(--accent-color);
+            --header-text-color: var(--accent-color);
+            --button-bg: var(--primary-color);
+            --button-text: var(--accent-color);
+            --button-hover-bg: var(--secondary-color);
+            --input-bg: rgba(0, 247, 255, 0.1); /* Transparent neon */
+            --input-border: var(--secondary-color);
+            background-image: linear-gradient(var(--secondary-color) 1px, transparent 1px), linear-gradient(to right, var(--secondary-color) 1px, var(--bg-color) 1px);
+            background-size: 20px 20px;
+            background-repeat: repeat;
+        }
+        .theme-1980s .widget {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color), inset 0 0 5px var(--secondary-color);
+            text-shadow: 0 0 5px var(--secondary-color);
+        }
+        .theme-1980s .typing-test-input, .theme-1980s #capsule-input, .theme-1980s .game-corner-input {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+        }
+        .theme-1980s button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: 1px solid var(--button-text);
+            box-shadow: 0 0 5px var(--button-text);
+        }
+        .theme-1980s button:hover {
+            background-color: var(--button-hover-bg);
+            box-shadow: 0 0 10px var(--button-text);
+        }
+        .theme-1980s #typing-phrase span.correct { color: #0f0; } /* Brighter green */
+        .theme-1980s #typing-phrase span.incorrect { color: #f00; } /* Brighter red */
+
+
+        /* 1990s Theme */
+        .theme-1990s {
+            --bg-color: #c0c0c0; /* Windows 95 Gray */
+            --text-color: #000;
+            --primary-color: #000080; /* Dark Blue */
+            --secondary-color: #808080; /* Medium Gray */
+            --accent-color: #008080; /* Teal */
+            --font-family: 'DotGothic16', sans-serif;
+            --border-radius: 0;
+            --shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+            --widget-bg: #c0c0c0;
+            --header-bg: #c0c0c0;
+            --slider-thumb-bg: var(--primary-color);
+            --header-text-color: var(--text-color);
+            --button-bg: #c0c0c0;
+            --button-text: black;
+            --button-hover-bg: #a0a0a0;
+            --input-bg: white;
+            --input-border: #808080;
+        }
+        .theme-1990s .widget {
+            border-style: solid;
+            border-width: 2px;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            box-shadow: none; /* Override base shadow */
+            padding: 0.5rem; /* Adjust padding for 90s look */
+        }
+        .theme-1990s .widget h3 {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #0a0a0a;
+        }
+        .theme-1990s button {
+            border-style: solid;
+            border-width: 2px;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            box-shadow: none;
+        }
+        .theme-1990s button:active {
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+        }
+        .theme-1990s .typing-test-input, .theme-1990s #capsule-input, .theme-1990s .game-corner-input {
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+        }
+        /* 1990s desktop specific styles */
+        .theme-1990s #era-1990s {
+            position: relative;
+            min-height: 500px; /* Ensure enough space for desktop */
+            display: block; /* Override grid for desktop layout */
+            overflow: hidden; /* For draggable icons */
+        }
+        .theme-1990s .desktop-icon {
+            position: absolute; /* Keep absolute for dragging */
+            width: 100px;
+            text-align: center;
+            margin: 1rem;
+            cursor: grab; /* Indicate draggable */
+            font-size: 1rem; /* Increased from 0.875rem */
+            color: black; /* Changed to black for better contrast on white icon background */
+            text-shadow: 1px 1px #808080; /* Adjusted shadow for black text */
+            user-select: none; /* Prevent text selection during drag */
+            z-index: 10; /* Ensure icons are above taskbar */
+        }
+        .theme-1990s .desktop-icon svg {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 0.25rem;
+            display: block; /* Ensure SVG is block level for centering */
+            fill: white; /* Default fill for icons */
+            stroke: black; /* Outline for icons */
+            stroke-width: 1px;
+        }
+        .theme-1990s .desktop-icon span {
+            color: black; /* Text for icons - explicitly black */
+            font-weight: normal;
+        }
+        .theme-1990s .taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 32px;
+            background-color: #c0c0c0;
+            border-top: 2px solid #fff;
+            border-bottom: 2px solid #0a0a0a;
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf;
+            z-index: 20; /* Ensure taskbar is on top */
+        }
+        .theme-1990s .start-button {
+            background-color: #c0c0c0;
+            border-style: solid;
+            border-width: 2px;
+            border-color: #dfdfdf #808080 #808080 #dfdfdf;
+            padding: 2px 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .theme-1990s .start-button:active {
+            border-color: #808080 #dfdfdf #dfdfdf #808080;
+        }
+
+        /* 2000s Theme */
+        .theme-2000s {
+            --bg-color: #eff6ff; /* Light Blue */
+            --text-color: #333;
+            --primary-color: #3b82f6; /* Blue */
+            --secondary-color: #22c55e; /* Green */
+            --accent-color: #ef4444; /* Red */
+            --font-family: 'Tahoma', sans-serif;
+            --border-radius: 0.5rem;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --widget-bg: linear-gradient(to bottom, #ffffff, #f0f0f0);
+            --header-bg: #3b82f6;
+            --slider-thumb-bg: var(--secondary-color);
+            --header-text-color: white;
+            --button-bg: var(--primary-color);
+            --button-text: white;
+            --button-hover-bg: #2563eb;
+            --input-bg: white;
+            --input-border: #9ca3af;
+        }
+        .theme-2000s .widget {
+            border: 1px solid #d1d5db;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .theme-2000s .widget h3 {
+            color: var(--primary-color);
+        }
+        .theme-2000s button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .theme-2000s button:hover {
+            background-color: var(--button-hover-bg);
+        }
+        .theme-2000s .typing-test-input, .theme-2000s #capsule-input, .theme-2000s .game-corner-input {
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: var(--border-radius);
+        }
+        .theme-2000s .quiz-option {
+            background-color: #e2e8f0;
+            border: 1px solid #cbd5e1;
+            padding: 0.75rem; /* Increased padding */
+            font-size: 1rem; /* Increased font size */
+            border-radius: 0.25rem;
+            cursor: pointer;
+        }
+        .theme-2000s .quiz-option.selected {
+            background-color: #bfdbfe;
+            border-color: #2563eb;
+        }
+        .theme-2000s .quiz-option.correct-answer {
+            background-color: #d1fae5; /* green-100 */
+            border-color: #10b981; /* green-500 */
+        }
+        .theme-2000s .quiz-option.incorrect-answer {
+            background-color: #fee2e2; /* red-100 */
+            border-color: #ef4444; /* red-500 */
+        }
+
+
+        /* 2010s Theme */
+        .theme-2010s {
+            --bg-color: #e0f2f7; /* Light blue/cyan, flat design feel */
+            --text-color: #333;
+            --primary-color: #00bcd4; /* Cyan */
+            --secondary-color: #ff4081; /* Pink accent */
+            --accent-color: #4caf50; /* Green */
+            --font-family: 'Inter', sans-serif; /* Modern, clean */
+            --border-radius: 0.25rem; /* Slightly rounded */
+            --shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+            --widget-bg: #ffffff;
+            --header-bg: #00bcd4; /* Primary color for header */
+            --slider-thumb-bg: var(--primary-color);
+            --header-text-color: white;
+            --button-bg: var(--primary-color);
+            --button-text: white;
+            --button-hover-bg: #0097a7; /* Darker cyan */
+            --input-bg: white;
+            --input-border: #bdbdbd; /* Light gray */
+        }
+        .theme-2010s .widget {
+            border: 1px solid #e0e0e0;
+            box-shadow: var(--shadow);
+        }
+        .theme-2010s .widget h3 {
+            color: var(--primary-color);
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .theme-2010s button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: background-color 0.3s ease;
+        }
+        .theme-2010s button:hover {
+            background-color: var(--button-hover-bg);
+        }
+        .theme-2010s .typing-test-input, .theme-2010s #capsule-input, .theme-2010s .game-corner-input {
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: var(--border-radius);
+        }
+        .theme-2010s .social-post {
+            background-color: #f5f5f5;
+            border-radius: 0.25rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid #eee;
+            font-size: 0.95rem; /* Slightly increased */
+        }
+        .theme-2010s .social-post .text-xs {
+            font-size: 0.8rem; /* Slightly increased for timestamp */
+        }
+        .theme-2010s .app-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 15%; /* Squircle-like */
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.25rem; /* Slightly larger icons */
+            color: #555;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .theme-2010s .app-icon:hover {
+            transform: translateY(-3px);
+        }
+        .theme-2010s #pitch-output {
+            font-size: 1rem; /* Increased from 0.875rem */
+            color: #4a4a4a; /* Darker gray for better contrast */
+        }
+
+
+        /* 2020s Theme (Uses root variables, minimal overrides) */
+        .theme-2020s {
+            --header-text-color: var(--text-color); /* Ensure it's explicitly set */
+            --button-bg: var(--primary-color);
+            --button-text: white;
+            --button-hover-bg: var(--secondary-color);
+            --input-bg: white;
+            --input-border: #d1d5db;
+        }
+        .theme-2020s button {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .theme-2020s button:hover {
+            background-color: var(--button-hover-bg);
+        }
+        .theme-2020s .typing-test-input, .theme-2020s #capsule-input, .theme-2020s .game-corner-input {
+            border: 1px solid var(--input-border);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: var(--border-radius);
+        }
+        .theme-2020s .bingo-square {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 0.95rem; /* Increased from 0.75rem */
+        }
+        .theme-2020s .bingo-square.clicked {
+            background-color: #60a5fa; /* blue-400 */
+            color: white;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+        }
+        .theme-2020s .bingo-square:hover {
+            background-color: #e0f2fe; /* sky-100 lighter */
+        }
+        .theme-2020s #bingo-message {
+            font-size: 1rem; /* Increased from 0.875rem */
+        }
+
+
+        /* 2035s Theme */
+        .theme-2035s {
+            --bg-color: #0a0a1a; /* Dark Blue/Purple */
+            --text-color: #e0e0ff; /* Light Lavender */
+            --primary-color: #8b5cf6; /* Violet */
+            --secondary-color: #ec4899; /* Pink */
+            --accent-color: #38bdf8; /* Sky Blue */
+            --font-family: 'Inter', sans-serif; /* Modern, but could be more futuristic */
+            --border-radius: 1rem;
+            --shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+            --widget-bg: rgba(255, 255, 255, 0.05); /* Transparent White */
+            --header-bg: rgba(10, 10, 26, 0.5);
+            --slider-thumb-bg: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            --header-text-color: var(--accent-color);
+            --button-bg: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            --button-text: white;
+            --button-hover-bg: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --input-border: var(--primary-color);
+        }
+        .theme-2035s .widget {
+            background: var(--widget-bg);
+            backdrop-filter: blur(10px); /* Glassmorphism */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow);
+            position: relative; /* For glowing effects */
+            overflow: hidden; /* For pseudo-elements */
+        }
+        .theme-2035s .widget::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--border-radius);
+            padding: 2px; /* Border thickness */
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color), var(--secondary-color));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+        }
+        .theme-2035s .widget h3 {
+            color: var(--accent-color);
+            text-shadow: 0 0 8px var(--accent-color);
+        }
+        .theme-2035s button {
+            background: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+            transition: all 0.3s ease;
+        }
+        .theme-2035s button:hover {
+            background: var(--button-hover-bg);
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.7);
+        }
+        .theme-2035s .typing-test-input, .theme-2035s #capsule-input, .theme-2035s .game-corner-input {
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            border-radius: var(--border-radius);
+            box-shadow: inset 0 0 5px rgba(139, 92, 246, 0.2);
+        }
+        .theme-2035s #capsule-output .text-amber-300 {
+            color: #fcd34d; /* Brighter amber */
+            font-size: 1.1rem; /* Increased font size */
+        }
+        .theme-2035s .text-slate-400 {
+            color: #94a3b8; /* Slightly brighter slate */
+        }
+        .theme-2035s .text-purple-300 {
+            color: #d8b4fe; /* Brighter purple */
+            font-size: 0.95rem; /* Increased */
+        }
+        .theme-2035s .text-blue-300 {
+            color: #93c5fd; /* Brighter blue */
+            font-size: 0.95rem; /* Increased */
+        }
+        .theme-2035s .text-pink-300 {
+            color: #fbcfe8; /* Brighter pink */
+            font-size: 0.95rem; /* Increased */
+        }
+        .theme-2035s .text-green-400 {
+            color: #4ade80; /* Brighter green */
+        }
+
+
+        /* General Styles */
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            font-family: var(--font-family); 
+            transition: background-color 0.5s ease, color 0.5s ease, font-family 0.5s ease; 
+            font-size: 1rem; /* Base font size increased */
+        }
+        .widget { 
+            background: var(--widget-bg); 
+            border-radius: var(--border-radius); 
+            box-shadow: var(--shadow); 
+            padding: 1.5rem; 
+            transition: all 0.3s ease; 
+            font-size: 0.95rem; /* Default widget content font size */
+        }
+        .widget h3 {
+            font-size: 1.5rem; /* Ensure widget titles are large enough */
+        }
+        .widget p {
+            font-size: 1rem; /* Ensure paragraph text is readable */
+        }
+        .widget.interactive-widget { cursor: pointer; }
+        .widget.interactive-widget:active { transform: scale(0.98); }
+        .era { display: none; }
+        .era.active { display: grid; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Time Slider */
+        #time-slider-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        #time-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 10px; background: rgba(0,0,0,0.2); border-radius: 5px; outline: none; transition: opacity .2s; }
+        #time-slider::-webkit-slider-thumb { 
+            -webkit-appearance: none; 
+            appearance: none; 
+            width: 25px; 
+            height: 25px; 
+            background: var(--slider-thumb-bg); 
+            border-radius: 50%; 
+            cursor: grab; 
+            border: 2px solid white; 
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); 
+            transition: background 0.3s ease, transform 0.1s ease-out; 
+        }
+        #time-slider::-webkit-slider-thumb:active { 
+            cursor: grabbing; 
+            transform: scale(1.1); /* Pop effect */
+            box-shadow: 0 0 10px var(--slider-thumb-bg);
+        }
+        #time-slider::-moz-range-thumb { 
+            width: 25px; 
+            height: 25px; 
+            background: var(--slider-thumb-bg); 
+            border-radius: 50%; 
+            cursor: grab; 
+            border: 2px solid white; 
+            box-shadow: 0 0 5px rgba(0,0,0,0.5); 
+            transition: background 0.3s ease, transform 0.1s ease-out; 
+        }
+        #time-slider::-moz-range-thumb:active { 
+            cursor: grabbing; 
+            transform: scale(1.1); /* Pop effect */
+            box-shadow: 0 0 10px var(--slider-thumb-bg);
+        }
+        /* Current year display for slider */
+        #current-year-display {
+            position: absolute;
+            top: -1.5rem; /* Position above slider */
+            left: 50%; /* Centered initially */
+            transform: translateX(-50%);
+            font-weight: bold;
+            color: var(--text-color);
+            background: var(--widget-bg);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.1s ease-out;
+            z-index: 30; /* Ensure it's on top */
+            font-size: 1rem; /* Increased */
+        }
+        #time-slider:hover + #current-year-display,
+        #time-slider:active + #current-year-display {
+            opacity: 1;
+        }
+
+        /* OfficeBot */
+        #office-bot-container { position: fixed; bottom: 1rem; right: 1rem; z-index: 100; cursor: pointer; }
+        #office-bot-speech { 
+            position: absolute; bottom: 110%; right: 0; width: 250px; background: var(--widget-bg); 
+            box-shadow: var(--shadow); border-radius: var(--border-radius); padding: 1rem; opacity: 0; 
+            visibility: hidden; transition: all 0.3s; transform: translateY(10px); 
+            font-size: 0.95rem; /* Increased for readability */
+        }
+        #office-bot-container:hover #office-bot-speech { opacity: 1; visibility: visible; transform: translateY(0); }
+        @keyframes rotate-cube { 0% { transform: rotateX(0) rotateY(0); } 100% { transform: rotateX(360deg) rotateY(360deg); } }
+        
+        /* Modal Styles */
+        #modal-overlay {
+            position: fixed; inset: 0; background-color: rgba(0,0,0,0.5); z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        #modal-overlay.active { opacity: 1; visibility: visible; }
+        #modal-container {
+            background: var(--widget-bg); color: var(--text-color); border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 90%; max-width: 500px;
+            transform: scale(0.95); transition: all 0.3s ease;
+        }
+        #modal-overlay.active #modal-container { transform: scale(1); }
+        #modal-container .modal-header {
+            background-color: var(--primary-color);
+            color: var(--header-text-color); /* Use header text color for modal title */
+            padding: 1rem;
+            border-top-left-radius: var(--border-radius);
+            border-top-right-radius: var(--border-radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #modal-container .modal-header h3 {
+            color: inherit; /* Inherit color from header */
+            font-size: 1.25rem; /* Increased modal title font size */
+        }
+        #modal-container .modal-header button {
+            background: transparent;
+            border: none;
+            color: inherit;
+            padding: 0;
+        }
+        #modal-container .modal-content-body {
+            padding: 1.5rem;
+            font-size: 1rem; /* Increased modal content font size */
+        }
+        #modal-content .text-xs {
+            font-size: 0.85rem; /* Slightly increased for modal small text */
+        }
+        #modal-content .text-sm {
+            font-size: 0.95rem; /* Slightly increased for modal small text */
+        }
+
+
+        /* OfficeBot specific styles for different eras */
+        .theme-1990s #office-bot-avatar {
+            /* Clippy specific adjustments */
+            transform: scale(0.8);
+            transform-origin: bottom right;
+        }
+        .theme-1990s #office-bot-speech {
+            border: 2px solid #000;
+            box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+            background-color: #c0c0c0;
+            color: black;
+            font-family: 'DotGothic16', sans-serif;
+            border-radius: 0;
+        }
+
+        /* Footer styles */
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem 1rem;
+            text-align: center;
+            font-size: 0.95rem; /* Increased footer font size */
+            color: var(--text-color);
+            background-color: rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.5s ease;
+        }
+        .theme-1980s .footer {
+            background-color: var(--header-bg);
+            border-top: 2px dashed var(--primary-color);
+            color: var(--accent-color);
+            text-shadow: 0 0 5px var(--secondary-color);
+        }
+        .theme-1990s .footer {
+            background-color: var(--header-bg);
+            border-top: 2px solid #dfdfdf;
+            border-bottom: 2px solid #808080;
+            color: var(--text-color);
+            box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+        }
+        .theme-2000s .footer {
+            /* Removed background-color and border-top for 2000s */
+            background-color: transparent;
+            border-top: none;
+            color: var(--text-color);
+        }
+        .theme-2010s .footer {
+            background-color: var(--header-bg);
+            border-top: 1px solid #0097a7;
+            color: white;
+        }
+        .theme-2035s .footer {
+            /* Removed background-color and border-top for 2035s */
+            background-color: transparent;
+            border-top: none;
+            color: var(--accent-color);
+            backdrop-filter: none;
+            box-shadow: none;
+        }
+
+        /* Responsive adjustments for 1990s desktop icons */
+        @media (max-width: 768px) {
+            .theme-1990s .desktop-icon {
+                position: static; /* Remove absolute positioning */
+                margin: 0.5rem auto; /* Center and add spacing */
+                width: 80px; /* Smaller icons for mobile */
+            }
+            .theme-1990s #era-1990s {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: flex-start;
+                min-height: auto; /* Allow height to adjust */
+                padding-bottom: 4rem; /* Space for taskbar */
+            }
+            .theme-1990s .taskbar {
+                position: fixed; /* Keep taskbar at bottom */
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                z-index: 50; /* Ensure it's above other content */
+            }
+        }
+    </style>
+</head>
+<body id="main-body" class="theme-2020s">
+
+    <header class="sticky top-0 z-50 transition-colors duration-500" style="background-color: var(--header-bg); backdrop-filter: blur(10px);">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+            <h1 id="header-title" class="text-xl sm:text-3xl font-bold transition-all" style="color: var(--header-text-color);">404ffice Intranet</h1>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Time Slider -->
+        <div id="time-slider-container" class="p-4 bg-black/5 rounded-lg">
+            <label for="time-slider" class="block text-center font-semibold mb-2">TIME TRAVEL</label>
+            <input id="time-slider" type="range" min="1980" max="2035" step="1" value="2020">
+            <div id="current-year-display">2020</div>
+        </div>
+
+        <!-- Eras Container -->
+        <div id="eras-container">
+            <!-- 1980s Era -->
+            <section id="era-1980s" class="era grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="widget interactive-widget" data-modal-title="[ OFFICE TV ]" data-modal-content="<p class='text-lg'>Now Playing: 'Computer Safety for the Modern Office'. Please rewind when finished.</p><div class='mt-4 p-4 bg-black text-white text-center font-mono text-base'><pre><code>C:\> RUN SAFETY.EXE<br>LOADING...<br>PRESS ANY KEY TO CONTINUE</code></pre><p class='mt-4 text-base text-red-500 animate-pulse'>WARNING: Do NOT insert floppy disks from unknown sources!</p></div>"><h3 class="text-2xl mb-4" style="color: var(--accent-color);">[ OFFICE TV ]</h3><div class="bg-black aspect-video flex items-center justify-center text-center p-4"><p class="text-xl animate-pulse">VHS TRAINING: <br> "COMPUTER SAFETY"</p></div></div>
+                <div class="widget"><h3 class="text-2xl mb-4" style="color: var(--accent-color);">[ TYPING RACE ]</h3><p class="text-lg">Type the text below!</p><div id="typing-phrase" class="w-full h-24 p-2 mt-2 bg-black/50 text-left text-lg"></div><textarea id="typing-test-input" class="typing-test-input w-full h-12 p-2 mt-2 bg-black/50 text-lg" placeholder="Start typing here..." disabled></textarea><p id="wpm-result" class="mt-2 text-base"></p><button id="start-typing-test" class="mt-4 px-4 py-2 rounded">Start Typing Test</button></div>
+                <div class="widget"><h3 class="text-2xl mb-4" style="color: var(--accent-color);">[ ACHIEVEMENTS ]</h3><ul id="achievements-1980s" class="space-y-2 text-base"></ul></div>
+                <div class="widget interactive-widget" data-modal-title="[ BULLETIN BOARD ]" data-modal-content="<p class='font-bold text-xl mb-2'>404ffice DAILY - 1985.03.15</p><ul class='list-disc list-inside text-lg space-y-1'><li>New 'Smoking Permitted' zone added in breakroom.</li><li>Remember to log off before turning off your PC!</li><li>Company picnic next Saturday - BYO floppy disk for games!</li><li>Lost: One (1) 5.25-inch floppy disk labeled 'Budget 1986'. Reward for return.</li></ul><p class='mt-4 text-base text-right'>- Management</p>"><h3 class="text-2xl mb-4" style="color: var(--accent-color);">[ BULLETIN BOARD ]</h3><p class="text-lg">Latest Memos & Announcements. Click to read!</p><p class="text-base mt-2 animate-pulse">NEW!</p></div>
+                <div class="widget"><h3 class="text-2xl mb-4" style="color: var(--accent-color);">[ GAME CORNER ]</h3><p class="text-lg">"Text Adventure: The Quest for the Missing Stapler"</p><p class="text-base mt-2">Type 'START' to begin.</p><input type="text" id="game-corner-input" class="game-corner-input w-full p-2 mt-2 bg-black/50 text-lg" placeholder="Your command..."></div>
+            </section>
+
+            <!-- 1990s Era - Desktop Metaphor -->
+            <section id="era-1990s" class="era relative min-h-[500px] p-4">
+                 <!-- Desktop Icons -->
+                 <div class="desktop-icon absolute top-8 left-8 md:top-8 md:left-8" style="left: 32px; top: 32px;" data-modal-title="My Documents" data-modal-content="<div class='bg-white border-2 border-gray-400 p-2 shadow-md'><div class='bg-blue-800 text-white p-1 flex justify-between items-center'><span class='text-base'>My Documents</span><button class='text-white text-sm'>X</button></div><div class='p-2 text-black text-base'><p>Welcome to your digital filing cabinet! Files found:</p><ul class='list-disc list-inside mt-2'><li>Budget_Q3_Final.xls</li><li>TPS_Report_Template.doc</li><li>Vacation_Policy_Update.txt</li><li>AOL_Free_Trial.exe (do not open!)</li></ul></div></div>">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 17V7C3 6.44772 3.44772 6 4 6H10L12 8H20C20.5523 8 21 8.44772 21 9V17C21 17.5523 20.5523 18 20 18H4C3.44772 18 3 17.5523 3 17Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 17V7C3 6.44772 3.44772 6 4 6H10L12 8H20C20.5523 8 21 8.44772 21 9V17C21 17.5523 20.5523 18 20 18H4C3.44772 18 3 17.5523 3 17Z" fill="white"/></svg>
+                    <span>My Documents</span>
+                 </div>
+                 <div class="desktop-icon absolute top-8 left-40 md:top-8 md:left-40" style="left: 160px; top: 32px;" data-modal-title="Printer Status" data-modal-content="<div class='bg-white border-2 border-gray-400 p-2 shadow-md'><div class='bg-blue-800 text-white p-1 flex justify-between items-center'><span class='text-base'>Printer Status</span><button class='text-white text-sm'>X</button></div><div class='p-2 text-black text-base'><p>Printer: HP LaserJet 4000</p><p>Status: Online, Paper Jam (Tray 2)</p><p>Ink Levels: Cyan: 10%, Magenta: 15%, Yellow: 5%, Black: 80%</p><p class='mt-2 text-base text-red-700'>Please refill paper. Again. (Error Code: PC LOAD LETTER)</p></div></div>">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 18H18V10H6V18Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 18H18V10H6V18Z" fill="white"/><path d="M18 6H6C4.89543 6 4 6.89543 4 8V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V8C20 6.89543 19.1046 6 18 6Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 9V4H7V9" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 14H14" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Printer</span>
+                 </div>
+                 <div class="desktop-icon absolute top-28 left-8 md:top-28 md:left-8" style="left: 32px; top: 160px;" data-modal-title="Recycle Bin" data-modal-content="<div class='bg-white border-2 border-gray-400 p-2 shadow-md'><div class='bg-blue-800 text-white p-1 flex justify-between items-center'><span class='text-base'>Recycle Bin</span><button class='text-white text-sm'>X</button></div><div class='p-2 text-black text-base'><p>Recycle Bin (Empty)</p><p>Are you sure you want to delete 'Important_Memo.doc' permanently?</p><button class='mt-2 px-3 py-1 bg-gray-200 border-2 border-gray-400'>Yes</button><button class='mt-2 ml-2 px-3 py-1 bg-gray-200 border-2 border-gray-400'>No</button><p class='mt-4 text-base text-gray-700'>Tip: Empty regularly to free up disk space!</p></div></div>">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11V17" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11V17" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 7L6 19C6 19.5523 6.44772 20 7 20H17C17.5523 20 18 19.5523 18 19L19 7" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 7L6 19C6 19.5523 6.44772 20 7 20H17C17.5523 20 18 19.5523 18 19L19 7" fill="white"/><path d="M9 7V4C9 3.44772 9.44772 3 10 3H14C14.5523 3 15 3.44772 15 4V7" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Recycle Bin</span>
+                 </div>
+                 <div class="desktop-icon absolute top-28 left-40 md:top-28 md:left-40" style="left: 160px; top: 160px;" data-modal-title="Internet Explorer" data-modal-content="<div class='bg-white border-2 border-gray-400 p-2 shadow-md'><div class='bg-blue-800 text-white p-1 flex justify-between items-center'><span class='text-base'>Internet Explorer</span><button class='text-white text-sm'>X</button></div><div class='p-2 text-black text-base'><p class='text-center text-blue-800 font-bold text-xl'>Welcome to the World Wide Web!</p><p class='text-base mt-2'>Loading... (Please wait, this may take a moment)</p><div class='mt-4 text-center'><svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' class='inline-block w-16 h-16'><path d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z' fill='#000080'/><path d='M8 12H16' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M12 8V16' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg></div><p class='text-base mt-2'>Dial-up connection detected. Estimated wait: 3 minutes. (You've got mail!)</p></div></div>">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="#000080"/><path d="M8 12H16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8V16" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Internet Explorer</span>
+                 </div>
+                 <div class="desktop-icon absolute top-48 left-8 md:top-48 md:left-8" style="left: 32px; top: 288px;" data-modal-title="Minesweeper" data-modal-content="<div class='bg-white border-2 border-gray-400 p-2 shadow-md'><div class='bg-blue-800 text-white p-1 flex justify-between items-center'><span class='text-base'>Minesweeper</span><button class='text-white text-sm'>X</button></div><div class='p-2 text-black text-base'><p class='text-center font-bold text-xl'>Minesweeper</p><p class='text-base mt-2'>Click to reveal squares. Right-click to flag mines. Don't click a mine!</p><div class='mt-4 text-center'><svg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' class='inline-block w-16 h-16'><path d='M12 2L9.5 7L4 8.5L7 12L5.5 17.5L12 22L18.5 17.5L17 12L20 8.5L14.5 7L12 2Z' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/><path d='M12 2L9.5 7L4 8.5L7 12L5.5 17.5L12 22L18.5 17.5L17 12L20 8.5L14.5 7L12 2Z' fill='#008000'/><path d='M12 12H12.01' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg></div><button class='mt-4 px-3 py-1 bg-gray-200 border-2 border-gray-400'>New Game</button></div></div>">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L9.5 7L4 8.5L7 12L5.5 17.5L12 22L18.5 17.5L17 12L20 8.5L14.5 7L12 2Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 2L9.5 7L4 8.5L7 12L5.5 17.5L12 22L18.5 17.5L17 12L20 8.5L14.5 7L12 2Z" fill="#008000"/><path d="M12 12H12.01" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Minesweeper</span>
+                 </div>
+
+                 <!-- Taskbar -->
+                 <div class="taskbar">
+                    <button id="start-button" class="start-button">
+                        <img src="https://placehold.co/16x16/000080/FFFFFF?text=W" alt="Windows logo" class="inline-block">
+                        Start
+                    </button>
+                    <span class="ml-4 text-base font-bold">404ffice Portal 2.1</span>
+                 </div>
+            </section>
+
+            <!-- 2000s Era -->
+            <section id="era-2000s" class="era grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="widget interactive-widget" data-modal-title="404ffice TV" data-modal-content="<p class='text-lg'>A Flash animation plays, showing the 404ffice logo bouncing around the screen to a MIDI soundtrack.</p><div class='mt-4 bg-gray-200 p-4 rounded text-center'><p class='text-base text-gray-600'>[Flash Player Required]</p><img src='https://placehold.co/150x100/3b82f6/ffffff?text=FLASH' alt='Flash Animation Placeholder' class='mx-auto mt-2'></div><p class='mt-4 text-base text-gray-600'>Remember to update your Flash Player for optimal viewing!</p>"><h3 class="text-xl font-bold mb-4">Office TV</h3><div class="bg-blue-500 text-white p-4 rounded text-center"><p class="text-2xl animate-bounce">Welcome to 404ffice!</p></div></div>
+                <div class="widget"><h3 class="text-xl font-bold mb-4">Buzzword Quiz</h3><div id="quiz-content"><p id="quiz-question" class="mb-4 text-lg">Loading question...</p><div id="quiz-options" class="space-y-2"></div><p id="quiz-feedback" class="mt-4 text-lg font-semibold"></p><button id="next-quiz-question" class="mt-4 px-3 py-1 bg-blue-500 text-white rounded">Next Question</button><p id="quiz-score" class="mt-2 text-base">Score: 0/0</p></div></div>
+                <div class="widget"><h3 class="text-xl font-bold mb-4">Achievements</h3><ul id="achievements-2000s" class="space-y-2 text-base"></ul></div>
+                <div class="widget interactive-widget" data-modal-title="MySpace Profile" data-modal-content="<div class='bg-pink-100 p-4 rounded-lg'><h4 class='text-xl font-bold text-pink-700'>404ffice Official Profile</h4><p class='text-lg mt-2'><strong>About Me:</strong> Innovating since 1980! We're all about that business casual life. Top 8 friends: Our CEO, HR, IT, and the vending machine guy.</p><img src='https://placehold.co/100x100/FFC0CB/000000?text=LOGO' alt='MySpace profile pic' class='rounded-full mt-4 mx-auto'></div><p class='mt-4 text-base text-gray-600'>Don't forget to add us to your Top 8!</p>"><h3 class="text-xl font-bold mb-4">MySpace Profile</h3><p class="text-lg">Check out our official company profile!</p><img src="https://placehold.co/80x80/FFC0CB/000000?text=MY" alt="MySpace icon" class="mt-2 mx-auto"></div>
+                <div class="widget"><h3 class="text-xl font-bold mb-4">Flash Game Arcade</h3><p class="text-lg">Play "Office Space Invaders" (Requires Flash)</p><button id="play-flash-game" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded">Play Now</button><p class="mt-4 text-base text-gray-600">High score: 999,999 (HR Dept.)</p></div>
+            </section>
+
+            <!-- 2010s Era -->
+            <section id="era-2010s" class="era grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="widget interactive-widget" data-modal-title="Social Feed" data-modal-content="<div class='space-y-4'><div class='social-post'><p class='font-bold text-base'>@404fficeOfficial</p><p class='text-base mt-1'>Just crushed our Q3 goals! #Winning #CorporateLife</p><p class='text-sm text-gray-500 mt-2'>12:34 PM - Sep 15, 2012</p></div><div class='social-post'><p class='font-bold text-base'>@IT_Support</p><p class='text-base mt-1'>Remember to update your antivirus! Don't click suspicious links. 🚨</p><p class='text-sm text-gray-500 mt-2'>09:00 AM - Oct 1, 2015</p></div><div class='social-post'><p class='font-bold text-base'>@HR_Dept</p><p class='text-base mt-1'>Casual Friday is now 'Business Casual Friday'. Please adjust your denim accordingly.👖</p><p class='text-sm text-gray-500 mt-2'>04:50 PM - Nov 20, 2018</p></div></div>"><h3 class="text-xl font-bold mb-4">Social Feed</h3><p class="text-lg">Latest updates from the corporate feed.</p><div class="flex justify-center space-x-4 mt-4"><i data-lucide="message-square" class="w-8 h-8 text-blue-500"></i><i data-lucide="share-2" class="w-8 h-8 text-green-500"></i><i data-lucide="heart" class="w-8 h-8 text-red-500"></i></div></div>
+                <div class="widget interactive-widget" data-modal-title="Mobile App Showcase" data-modal-content="<div class='grid grid-cols-3 gap-4 text-center'><div class='app-icon bg-gradient-to-br from-blue-400 to-blue-600 text-white'><i data-lucide='message-circle'></i></div><div class='app-icon bg-gradient-to-br from-green-400 to-green-600 text-white'><i data-lucide='image'></i></div><div class='app-icon bg-gradient-to-br from-purple-400 to-purple-600 text-white'><i data-lucide='play'></i></div><div class='app-icon bg-gradient-to-br from-red-400 to-red-600 text-white'><i data-lucide='camera'></i></div><div class='app-icon bg-gradient-to-br from-yellow-400 to-yellow-600 text-white'><i data-lucide='map-pin'></i></div><div class='app-icon bg-gradient-to-br from-indigo-400 to-indigo-600 text-white'><i data-lucide='music'></i></div></div><p class='mt-4 text-lg text-center text-gray-600'>Download the latest apps to boost productivity!</p>"><h3 class="text-xl font-bold mb-4">Mobile App Showcase</h3><p class="text-lg">Discover the hottest new apps!</p><div class="flex justify-around mt-4"><div class="app-icon" style="background-color: #4267B2; color: white;"><i data-lucide="facebook"></i></div><div class="app-icon" style="background-color: #1DA1F2; color: white;"><i data-lucide="twitter"></i></div><div class="app-icon" style="background-color: #E60023; color: white;"><i data-lucide="pinterest"></i></div></div></div>
+                <div class="widget"><h3 class="text-xl font-bold mb-4">Achievements</h3><ul id="achievements-2010s" class="space-y-2 text-base"></ul></div>
+                <div class="widget interactive-widget" data-modal-title="Viral Video Trends" data-modal-content="<div class='text-center'><p class='text-xl font-bold mb-4'>'Harlem Shake' Office Edition</p><div class='aspect-video bg-gray-200 flex items-center justify-center'><p class='text-lg text-gray-500'>[Video Player Placeholder]</p><i data-lucide='youtube' class='w-16 h-16 text-red-500'></i></div><p class='mt-4 text-lg text-gray-600'>Don't try this at home (or the office)!</p></div>"><h3 class="text-xl font-bold mb-4">Viral Video Trends</h3><p class="text-lg">What's trending in the office?</p><div class="flex justify-center mt-4"><i data-lucide="play-circle" class="w-12 h-12 text-red-500"></i></div></div>
+                <div class="widget"><h3 class="text-xl font-bold mb-4">Startup Pitch Generator</h3><p class="text-lg">Generate your next million-dollar idea!</p><button id="generate-pitch-btn" class="mt-2 px-3 py-1 bg-cyan-500 text-white rounded">Generate Pitch</button><p id="pitch-output" class="mt-4 text-lg text-gray-700 italic">"We're like Uber, but for artisanal staplers."</p></div>
+            </section>
+
+            <!-- 2020s Era -->
+            <section id="era-2020s" class="era active grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 <div class="widget"><h3 class="text-xl font-bold mb-4">Zoom Bingo</h3><p class="text-lg">Click the squares as you hear them!</p><div id="bingo-board" class="grid grid-cols-3 gap-1 mt-2 text-base text-center"></div><p id="bingo-message" class="mt-4 text-lg font-semibold text-center"></p><button id="reset-bingo-btn" class="mt-4 px-3 py-1 bg-indigo-500 text-white rounded">Reset Board</button></div>
+                 <div class="widget"><h3 class="text-xl font-bold mb-4">Digital Time Capsule</h3><p class="text-lg">Leave a message for the future.</p><input id="capsule-input" type="text" placeholder="Your message..." class="w-full p-2 mt-2 border rounded text-lg"><button id="bury-capsule-btn" class="mt-2 px-3 py-1 bg-indigo-500 text-white rounded">Bury It!</button><p class="mt-4 text-base text-gray-600">Messages will be revealed in 2035!</p></div>
+                 <div class="widget"><h3 class="text-xl font-bold mb-4">Achievements</h3><ul id="achievements-2020s" class="space-y-2 text-base"></ul></div>
+                 <div class="widget"><h3 class="text-xl font-bold mb-4">Team Collaboration</h3><p class="text-lg">Latest from #general-chat:</p><div class="bg-gray-100 p-3 rounded mt-2 text-base space-y-2"><p><strong>Alice:</strong> Anyone seen my stapler? 🤔</p><p><strong>Bob:</strong> Check the 1990s era, Alice! 😂</p><p><strong>Charlie:</strong> Reminder: All hands meeting at 3 PM EST.</p><p><strong>DevTeam:</strong> Pushing a new update, expect minor glitches. 🐛</p></div><p class="mt-4 text-base text-gray-600">Stay connected, stay productive!</p></div>
+                 <div class="widget"><h3 class="text-xl font-bold mb-4">Wellness Corner</h3><p class="text-lg">Mindfulness Minute: Take a deep breath.</p><button id="start-meditation-btn" class="mt-2 px-3 py-1 bg-green-500 text-white rounded">Start Guided Meditation</button><p class="mt-4 text-base text-gray-600">Your mental health is important!</p></div>
+            </section>
+
+            <!-- 2035s Era - Holographic Futuristic Layout -->
+            <section id="era-2035s" class="era grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="widget interactive-widget" data-modal-title="Incoming Transmission" data-modal-content="<p class='text-lg'>A shimmering hologram of the CEO appears. 'Greetings, 404ffice employees! Let's synergize our neural pathways for optimal productivity today! End transmission.'</p><div class='mt-4 flex justify-center items-center'><div class='w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center animate-pulse-light' style='box-shadow: 0 0 20px var(--accent-color);'><i data-lucide='user' class='w-16 h-16 text-white opacity-70'></i></div></div><p class='mt-4 text-base text-gray-400'>Neural link established. Please ensure your brain-interface is updated.</p>"><h3 class="text-2xl mb-4">Holographic CEO</h3><div class="aspect-square flex items-center justify-center"><div class="w-32 h-32 rounded-full" style="background: radial-gradient(circle, var(--accent-color), transparent 60%); animation: fadeIn 2s infinite alternate;"></div></div></div>
+                <div class="widget"><h3 class="text-2xl mb-4">Time Capsule</h3><div id="capsule-output" class="p-4 bg-black/20 rounded"><p class="text-slate-400">No messages from the past... yet.</p></div><p class="mt-4 text-base text-gray-400">Future generations await your wisdom!</p></div>
+                <div class="widget"><h3 class="text-2xl mb-4">Achievements</h3><ul id="achievements-2035s" class="space-y-2 text-base"></ul></div>
+                <div class="widget"><h3 class="text-2xl mb-4">Neural Net News Feed</h3><div class="bg-black/10 p-3 rounded mt-2 text-base space-y-2"><p class='text-purple-300'>[ALERT] Quantum Fluctuation detected in Sector 7G. Minor coffee spills expected.</p><p class='text-blue-300'>[NEWS] 404ffice stock up 15% after successful Mars colonization bid.</p><p class='text-pink-300'>[REMINDER] Mandatory AI empathy training next cycle.</p></div><p class="mt-4 text-base text-gray-400'>Powered by 404ffice's predictive algorithms.</p></div>
+                <div class="widget"><h3 class="text-2xl mb-4">Quantum Computing Status</h3><p class="text-lg">Current Qubits: <span class="text-green-400">1024</span></p><p class="text-lg">Entanglement Stability: <span class="text-green-400">98.7%</span></p><div class="w-full bg-gray-700 rounded-full h-2.5 mt-2"><div class="bg-blue-500 h-2.5 rounded-full" style="width: 98.7%"></div></div><p class="mt-4 text-base text-gray-400'>Processing next-gen spreadsheets at light speed.</p></div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- OfficeBot Container -->
+    <div id="office-bot-container">
+        <div id="office-bot-speech"><p>Hello!</p></div>
+        <div id="office-bot-avatar"></div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="modal-overlay">
+        <div id="modal-container">
+            <div class="modal-header">
+                <h3 id="modal-title" class="text-lg font-bold">Modal Title</h3>
+                <button id="modal-close-btn" class="p-1"><i data-lucide="x" class="h-5 w-5"></i></button>
+            </div>
+            <div id="modal-content" class="modal-content-body">
+                <p>Modal content goes here.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer id="main-footer" class="footer">
+        <p id="footer-text">&copy; 2025 404ffice Corp. All rights reserved. (Probably.)</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+
+            const slider = document.getElementById('time-slider');
+            const currentYearDisplay = document.getElementById('current-year-display');
+            const mainBody = document.getElementById('main-body');
+            const headerTitle = document.getElementById('header-title');
+            const erasContainer = document.getElementById('eras-container');
+            const botAvatar = document.getElementById('office-bot-avatar');
+            const botSpeech = document.getElementById('office-bot-speech').querySelector('p');
+            const footerText = document.getElementById('footer-text');
+            
+            // Modal elements
+            const modalOverlay = document.getElementById('modal-overlay');
+            const modalContainer = document.getElementById('modal-container');
+            const modalTitle = document.getElementById('modal-title');
+            const modalContent = document.getElementById('modal-content');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+
+            let timeCapsuleMessage = localStorage.getItem('timeCapsuleMessage') || ""; // Load from localStorage
+            const achievements = new Set(JSON.parse(localStorage.getItem('achievements') || '[]')); // Load achievements
+
+            // Tone.js setup
+            let currentAmbientSound = null;
+            // Initialize Tone.js context
+            Tone.start();
+
+            // Define ambient sounds using Tone.Oscillator
+            const ambientSounds = {
+                '1980s': new Tone.Oscillator(50, "square").toDestination(), 
+                '1990s': new Tone.Oscillator(80, "sawtooth").toDestination(), 
+                '2000s': new Tone.Oscillator(120, "sine").toDestination(), 
+                '2010s': new Tone.Oscillator(150, "triangle").toDestination(), /* New 2010s sound */
+                '2020s': new Tone.Oscillator(180, "triangle").toDestination(), 
+                '2035s': new Tone.Oscillator(250, "sine").toDestination(), 
+            };
+            // Set loop and volume for ambient sounds
+            for (const key in ambientSounds) {
+                ambientSounds[key].loop = true;
+                ambientSounds[key].volume.value = -20; // Lower volume for background ambience
+            }
+
+            const eraMap = [
+                { year: 1980, id: '1980s', title: '404ffice GRID', theme: 'theme-1980s', sound: ambientSounds['1980s'], footer: '&copy; 1985 404ffice Corp. All rights reserved. (Do not copy floppy.)' },
+                { year: 1995, id: '1990s', title: '404ffice Portal 2.1', theme: 'theme-1990s', sound: ambientSounds['1990s'], footer: '&copy; 1998 404ffice Corp. Powered by Windows 98™. Please do not turn off your computer.' },
+                { year: 2005, id: '2000s', title: '404ffice Employee Portal', theme: 'theme-2000s', sound: ambientSounds['2000s'], footer: '&copy; 2005 404ffice Corp. All rights reserved. (Don\'t forget your Top 8!)' }, /* Added footer */
+                { year: 2010, id: '2010s', title: '404ffice Connect', theme: 'theme-2010s', sound: ambientSounds['2010s'], footer: '&copy; 2015 404ffice Corp. All rights reserved. #Innovation' }, /* New 2010s era */
+                { year: 2020, id: '2020s', title: '404ffice Intranet', theme: 'theme-2020s', sound: ambientSounds['2020s'], footer: '&copy; 2025 404ffice Corp. All rights reserved. (Probably.)' },
+                { year: 2035, id: '2035s', title: '404ffice Synapse v7', theme: 'theme-2035s', sound: ambientSounds['2035s'], footer: '&copy; 2035 404ffice Corp. All rights reserved. (Neural-linked and optimized.)' }, /* Added footer */
+            ];
+
+            const officeBotMessages = {
+              '1980s': "You have 2 new memos to type.",
+              '1990s': "Don't forget to feed the office fish! 🐟",
+              '2000s': "It looks like you're trying to work. Need help?",
+              '2010s': "Did you remember to like and subscribe? 👍", /* New 2010s message */
+              '2020s': "Slack outage in Zone B. Grab a coffee ☕",
+              '2035s': "Bio-rhythm indicates burnout risk. A 5-minute break is advised. 😌"
+            };
+
+            const achievementsList = {
+                'type-master': '🏆 Type Master: Completed the typing test!',
+                'time-traveler': '🧭 Time Traveler: Used the slider!',
+                'capsule-creator': '📦 Capsule Creator: Buried a message for the future!',
+                'quiz-master': '🧠 Quiz Master: Completed the Buzzword Quiz!',
+                'bingo-champ': '🎉 Bingo Champ: Got a Bingo in Zoom Bingo!',
+                'flash-gamer': '🎮 Flash Gamer: Played Office Space Invaders!',
+                'meditation-master': '🧘 Meditation Master: Completed a guided meditation!',
+                'pitch-perfect': '💡 Pitch Perfect: Generated a startup pitch!', /* New 2010s achievement */
+            };
+
+            function saveAchievements() {
+                localStorage.setItem('achievements', JSON.stringify(Array.from(achievements)));
+            }
+
+            function updateAchievements(eraId) {
+                const listEl = document.getElementById(`achievements-${eraId}`);
+                if (!listEl) return;
+                listEl.innerHTML = '';
+                if (achievements.size === 0) {
+                    listEl.innerHTML = '<li>No badges yet!</li>';
+                } else {
+                    achievements.forEach(achId => {
+                        const li = document.createElement('li');
+                        li.textContent = achievementsList[achId];
+                        listEl.appendChild(li);
+                    });
+                }
+                saveAchievements(); // Save after updating
+            }
+
+            function updateEra(year) {
+                const currentEra = eraMap.slice().reverse().find(era => year >= era.year);
+                if (!currentEra || mainBody.dataset.currentEra === currentEra.id) return;
+
+                mainBody.dataset.currentEra = currentEra.id;
+                mainBody.dataset.currentThemeClass = currentEra.theme;
+                mainBody.className = ''; // Clear existing classes
+                mainBody.classList.add(currentEra.theme);
+                headerTitle.textContent = currentEra.title;
+                footerText.innerHTML = currentEra.footer; // Update footer text
+
+                Array.from(erasContainer.children).forEach(eraSection => {
+                    eraSection.classList.toggle('active', eraSection.id === `era-${currentEra.id}`);
+                });
+
+                updateOfficeBot(currentEra.id);
+                updateAchievements(currentEra.id);
+                
+                if (!achievements.has('time-traveler')) {
+                    achievements.add('time-traveler');
+                }
+
+                // Handle ambient sound (always on now)
+                if (currentAmbientSound) {
+                    currentAmbientSound.stop();
+                }
+                if (currentEra.sound) {
+                    currentEra.sound.start();
+                    currentAmbientSound = currentEra.sound;
+                } else {
+                    currentAmbientSound = null;
+                }
+
+                // Update 2035s time capsule display
+                if (currentEra.id === '2035s') {
+                    const capsuleOutput = document.getElementById('capsule-output');
+                    if (timeCapsuleMessage) {
+                        capsuleOutput.innerHTML = `<p class="text-amber-300">"${timeCapsuleMessage}"</p><p class="text-xs text-slate-400 mt-2">- Message from the 2020s</p>`;
+                    } else {
+                        capsuleOutput.innerHTML = `<p class="text-slate-400">No messages from the past... yet.</p>`;
+                    }
+                }
+            }
+
+            function updateOfficeBot(eraId) {
+                botSpeech.textContent = officeBotMessages[eraId];
+                let avatarHtml = '';
+                switch(eraId) {
+                    case '1980s': avatarHtml = `<div class="w-16 h-16 border-4 p-2" style="border-color: var(--primary-color); color: var(--primary-color);"><i data-lucide="bot" class="w-full h-full"></i></div>`; break;
+                    case '1990s': avatarHtml = `<img src="https://cdn.icon-icons.com/icons2/2248/PNG/512/microsoft_office_clippy_icon_137365.png" class="w-20 h-24 object-contain" alt="Clippy">`; break;
+                    case '2000s': avatarHtml = `<div class="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white"><i data-lucide="message-circle" class="w-8 h-8"></i></div>`; break;
+                    case '2010s': avatarHtml = `<div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-400 to-teal-500 flex items-center justify-center text-white"><i data-lucide="smartphone" class="w-8 h-8"></i></div>`; break; /* New 2010s avatar */
+                    case '2020s': avatarHtml = `<div class="w-16 h-16 rounded-full bg-indigo-500 flex items-center justify-center text-white"><i data-lucide="message-circle" class="w-8 h-8"></i></div>`; break;
+                    case '2035s': avatarHtml = `<div style="width: 80px; height: 80px; perspective: 400px;"><div style="width:100%; height:100%; position:relative; transform-style: preserve-3d; animation: rotate-cube 10s infinite linear;"><div style="position:absolute; width:80px; height:80px; border:1px solid var(--accent-color); background:rgba(56, 189, 248, 0.2); transform: rotateY(90deg) translateZ(40px);"></div><div style="position:absolute; width:80px; height:80px; border:1px solid var(--accent-color); background:rgba(56, 189, 248, 0.2); transform: rotateY(-90deg) translateZ(40px);"></div><div style="position:absolute; width:80px; height:80px; border:1px solid var(--accent-color); background:rgba(56, 189, 248, 0.2); transform: rotateX(90deg) translateZ(40px);"></div><div style="position:absolute; width:80px; height:80px; border:1px solid var(--accent-color); background:rgba(56, 189, 248, 0.2); transform: rotateX(-90deg) translateZ(40px);"></div><div style="position:absolute; width:80px; height:80px; border:1px solid var(--accent-color); background:rgba(56, 189, 248, 0.2); transform: rotateY(0deg) translateZ(40px);"></div><div style="position:absolute; width:80px; height:80px; border:1px solid var(--accent-color); background:rgba(56, 189, 248, 0.2); transform: rotateY(180deg) translateZ(40px);"></div></div></div>`; break;
+                    default: avatarHtml = `<img src="https://cdn.icon-icons.com/icons2/2248/PNG/512/microsoft_office_clippy_icon_137365.png" class="w-20 h-24 object-contain" alt="Clippy">`; break;
+                }
+                botAvatar.innerHTML = avatarHtml;
+                lucide.createIcons(); // Re-create icons for the bot avatar
+            }
+
+            // Slider interactivity
+            slider.addEventListener('input', (e) => {
+                const year = e.target.value;
+                currentYearDisplay.textContent = year;
+                const percent = (year - slider.min) / (slider.max - slider.min);
+                const sliderWidth = slider.offsetWidth;
+                const thumbWidth = 25; // Approximate thumb width
+                const offset = (sliderWidth - thumbWidth) * percent;
+                currentYearDisplay.style.left = `${offset + thumbWidth / 2}px`;
+                updateEra(year);
+            });
+            slider.addEventListener('mousedown', () => {
+                currentYearDisplay.style.opacity = '1';
+                currentYearDisplay.style.transform = 'translateX(-50%) translateY(-5px)';
+            });
+            slider.addEventListener('mouseup', () => {
+                currentYearDisplay.style.opacity = '0';
+                currentYearDisplay.style.transform = 'translateX(-50%) translateY(10px)';
+            });
+
+
+            // --- Modal Logic ---
+            function openModal(title, content) {
+                modalTitle.textContent = title;
+                modalContent.innerHTML = content; // Use innerHTML for richer content
+                // Apply theme to modal container
+                modalContainer.className = ''; // Clear existing classes
+                modalContainer.classList.add('rounded-lg', 'overflow-hidden', mainBody.dataset.currentThemeClass || 'theme-2020s'); 
+                modalOverlay.classList.add('active');
+            }
+            function closeModal() {
+                modalOverlay.classList.remove('active');
+            }
+            modalCloseBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) closeModal();
+            });
+            document.addEventListener('click', (e) => {
+                const widget = e.target.closest('.interactive-widget');
+                const desktopIcon = e.target.closest('.desktop-icon');
+
+                if (widget) {
+                    const title = widget.dataset.modalTitle;
+                    const content = widget.dataset.modalContent;
+                    if (title && content) {
+                        openModal(title, content);
+                    }
+                } else if (desktopIcon && !desktopIcon.classList.contains('dragging')) { // Handle desktop icons for 1990s era, but not while dragging
+                     const title = desktopIcon.dataset.modalTitle;
+                     const content = desktopIcon.dataset.modalContent;
+                     if (title && content) {
+                         openModal(title, content);
+                     }
+                }
+            });
+
+            // --- 1980s Typing Race Logic ---
+            const typingPhraseEl = document.getElementById('typing-phrase');
+            const typingTestInput = document.getElementById('typing-test-input');
+            const wpmResult = document.getElementById('wpm-result');
+            const startTypingTestBtn = document.getElementById('start-typing-test');
+            const typingPhrases = [
+                "The quick brown fox jumps over the lazy dog.",
+                "Never underestimate the power of a good coffee break.",
+                "404ffice: Innovating since 1980.",
+                "Free donuts in the breakroom on Friday!",
+                "All your base are belong to us."
+            ];
+            let currentPhrase = '';
+            let charactersTyped = 0;
+            let timerStarted = false;
+            let typingStartTime;
+
+            function resetTypingTest() {
+                currentPhrase = typingPhrases[Math.floor(Math.random() * typingPhrases.length)];
+                typingPhraseEl.innerHTML = currentPhrase.split('').map(char => `<span>${char}</span>`).join('');
+                typingTestInput.value = '';
+                typingTestInput.disabled = true;
+                wpmResult.textContent = '';
+                charactersTyped = 0;
+                timerStarted = false;
+                Array.from(typingPhraseEl.children).forEach(span => {
+                    span.classList.remove('correct', 'incorrect');
+                });
+            }
+
+            startTypingTestBtn.addEventListener('click', () => {
+                resetTypingTest();
+                typingTestInput.disabled = false;
+                typingTestInput.focus();
+                typingStartTime = new Date();
+                timerStarted = true;
+            });
+
+            typingTestInput.addEventListener('input', () => {
+                if (!timerStarted) return;
+
+                const typedText = typingTestInput.value;
+                const phraseChars = typingPhraseEl.children;
+                charactersTyped = typedText.length;
+
+                for (let i = 0; i < currentPhrase.length; i++) {
+                    const charSpan = phraseChars[i];
+                    if (i < typedText.length) {
+                        if (typedText[i] === currentPhrase[i]) {
+                            charSpan.classList.add('correct');
+                            charSpan.classList.remove('incorrect');
+                        } else {
+                            charSpan.classList.add('incorrect');
+                            charSpan.classList.remove('correct');
+                        }
+                    } else {
+                        charSpan.classList.remove('correct', 'incorrect');
+                    }
+                }
+
+                if (typedText === currentPhrase) {
+                    const endTime = new Date();
+                    const timeDiff = (endTime - typingStartTime) / 1000; // in seconds
+                    const words = currentPhrase.split(' ').length;
+                    const wpm = Math.round((words / timeDiff) * 60);
+                    wpmResult.textContent = `Complete! Your WPM: ${wpm}`;
+                    achievements.add('type-master');
+                    updateAchievements('1980s');
+                    typingTestInput.disabled = true;
+                    timerStarted = false;
+                }
+            });
+            resetTypingTest(); // Initial setup
+
+            // --- 1980s Game Corner Logic ---
+            const gameCornerInput = document.getElementById('game-corner-input');
+            gameCornerInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const command = gameCornerInput.value.trim().toUpperCase();
+                    if (command === 'START') {
+                        openModal('[ GAME CORNER ]', "<p class='font-bold text-lg mb-2'>Welcome to The Quest for the Missing Stapler!</p><p class='text-base'>You are in a dimly lit office. A critical TPS report awaits, but your stapler is missing!</p><p class='text-base mt-2'>Commands: LOOK, GO [DIRECTION], TAKE [ITEM]</p>");
+                    } else {
+                        openModal('[ GAME CORNER ]', `<p class='font-bold text-lg mb-2'>Invalid Command: "${gameCornerInput.value}"</p><p class='text-base'>Please type 'START' to begin the adventure.</p>`);
+                    }
+                    gameCornerInput.value = ''; // Clear input
+                }
+            });
+
+
+            // --- 1990s Desktop Icon Dragging Logic ---
+            const desktopIcons = document.querySelectorAll('.desktop-icon');
+            let activeItem = null;
+            let currentX;
+            let currentY;
+            let initialX;
+            let initialY;
+            let xOffset = 0;
+            let yOffset = 0;
+
+            desktopIcons.forEach(icon => {
+                icon.addEventListener('touchstart', dragStart);
+                icon.addEventListener('touchend', dragEnd);
+                icon.addEventListener('touchmove', drag);
+
+                icon.addEventListener('mousedown', dragStart);
+                icon.addEventListener('mouseup', dragEnd);
+                icon.addEventListener('mousemove', drag);
+                // Add click listener for desktop icons
+                icon.addEventListener('click', (e) => {
+                    if (!icon.classList.contains('dragging')) { // Only open modal if not dragging
+                        const title = icon.dataset.modalTitle;
+                        const content = icon.dataset.modalContent;
+                        if (title && content) {
+                            openModal(title, content);
+                        }
+                    }
+                });
+            });
+
+            function dragStart(e) {
+                if (e.target.tagName === 'SVG' || e.target.tagName === 'SPAN' || e.target.closest('.desktop-icon')) {
+                    activeItem = e.target.closest('.desktop-icon');
+                    activeItem.classList.add('dragging'); // Add dragging class
+                    
+                    // Get current position relative to its parent (era-1990s section)
+                    const style = window.getComputedStyle(activeItem);
+                    const matrix = new DOMMatrixReadOnly(style.transform);
+                    xOffset = matrix.m41;
+                    yOffset = matrix.m42;
+
+                    if (e.type === "touchstart") {
+                        initialX = e.touches[0].clientX - xOffset;
+                        initialY = e.touches[0].clientY - yOffset;
+                    } else {
+                        initialX = e.clientX - xOffset;
+                        initialY = e.clientY - yOffset;
+                    }
+                }
+            }
+
+            function dragEnd(e) {
+                if (activeItem) {
+                    activeItem.classList.remove('dragging'); // Remove dragging class
+                    initialX = currentX;
+                    initialY = currentY;
+                    activeItem = null;
+                }
+            }
+
+            function drag(e) {
+                if (activeItem) {
+                    e.preventDefault();
+                    
+                    if (e.type === "touchmove") {
+                        currentX = e.touches[0].clientX - initialX;
+                        currentY = e.touches[0].clientY - initialY;
+                    } else {
+                        currentX = e.clientX - initialX;
+                        currentY = e.clientY - initialY;
+                    }
+
+                    xOffset = currentX;
+                    yOffset = currentY;
+
+                    setTranslate(currentX, currentY, activeItem);
+                }
+            }
+
+            function setTranslate(xPos, yPos, el) {
+                el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+            }
+
+            // --- 1990s Taskbar Start Button Logic ---
+            const startButton = document.getElementById('start-button');
+            startButton.addEventListener('click', () => {
+                openModal('Start Menu', '<div class="p-2 text-black text-base"><p class="font-bold text-xl mb-2">Welcome to 404ffice Portal!</p><ul class="list-disc list-inside space-y-1"><li>Programs</li><li>Documents</li><li>Settings</li><li>Find</li><li>Help</li><li>Run...</li><li>Shut Down...</li></ul><p class="mt-4 text-base text-gray-700">Remember to defragment your hard drive regularly!</p></div>');
+            });
+
+
+            // --- 2000s Office TV Details Button Logic (Reverted to interactive-widget) ---
+            // The logic for officeTvDetailsBtn is removed, as it's now handled by the general interactive-widget click listener.
+
+
+            // --- 2000s Buzzword Quiz Logic ---
+            const quizQuestions = [
+                {
+                    question: "What does 'Synergy' mean?",
+                    options: ["Working separately for individual goals", "The combined power of a group working together", "A new type of coffee machine", "A highly efficient spreadsheet software"],
+                    answer: "The combined power of a group working together"
+                },
+                {
+                    question: "To 'Leverage' something in business means to:",
+                    options: ["Lift heavy objects with a lever", "Use it to maximum advantage", "Avoid using it at all costs", "Delegate it to an intern"],
+                    answer: "Use it to maximum advantage"
+                },
+                {
+                    question: "What is 'Low-hanging fruit'?",
+                    options: ["Fruit that has fallen off a tree", "Tasks that are easy to accomplish", "Difficult challenges that require significant effort", "A new company snack policy"],
+                    answer: "Tasks that are easy to accomplish"
+                }
+            ];
+            let currentQuizQuestionIndex = 0;
+            let quizScore = 0;
+            let selectedOption = null;
+
+            const quizQuestionEl = document.getElementById('quiz-question');
+            const quizOptionsEl = document.getElementById('quiz-options');
+            const quizFeedbackEl = document.getElementById('quiz-feedback');
+            const nextQuizQuestionBtn = document.getElementById('next-quiz-question');
+            const quizScoreEl = document.getElementById('quiz-score');
+
+            function loadQuizQuestion() {
+                if (currentQuizQuestionIndex < quizQuestions.length) {
+                    const q = quizQuestions[currentQuizQuestionIndex];
+                    quizQuestionEl.textContent = q.question;
+                    quizOptionsEl.innerHTML = '';
+                    quizFeedbackEl.textContent = '';
+                    selectedOption = null;
+                    nextQuizQuestionBtn.textContent = 'Next Question';
+                    nextQuizQuestionBtn.disabled = true; // Disable until an answer is selected
+
+                    q.options.forEach(option => {
+                        const div = document.createElement('div');
+                        div.className = 'quiz-option p-2 rounded cursor-pointer';
+                        div.textContent = option;
+                        div.addEventListener('click', () => selectQuizOption(div, option, q.answer));
+                        quizOptionsEl.appendChild(div);
+                    });
+                } else {
+                    quizQuestionEl.textContent = "Quiz Complete!";
+                    quizOptionsEl.innerHTML = '';
+                    quizFeedbackEl.textContent = `You scored ${quizScore} out of ${quizQuestions.length}!`;
+                    nextQuizQuestionBtn.style.display = 'none';
+                    if (quizScore === quizQuestions.length) {
+                        achievements.add('quiz-master');
+                        updateAchievements('2000s');
+                    }
+                }
+                updateQuizScoreDisplay();
+            }
+
+            function selectQuizOption(element, option, correctAnswer) {
+                // Clear previous selections and feedback
+                Array.from(quizOptionsEl.children).forEach(opt => {
+                    opt.classList.remove('selected', 'correct-answer', 'incorrect-answer');
+                    opt.style.pointerEvents = 'none'; // Disable further clicks
+                });
+
+                selectedOption = option;
+                element.classList.add('selected');
+                nextQuizQuestionBtn.disabled = false; // Enable next button
+
+                if (option === correctAnswer) {
+                    quizFeedbackEl.textContent = "Correct!";
+                    quizFeedbackEl.style.color = 'green';
+                    quizScore++;
+                    element.classList.add('correct-answer');
+                } else {
+                    quizFeedbackEl.textContent = "Incorrect. The correct answer was: " + correctAnswer;
+                    quizFeedbackEl.style.color = 'red';
+                    element.classList.add('incorrect-answer');
+                    // Highlight correct answer
+                    Array.from(quizOptionsEl.children).find(opt => opt.textContent === correctAnswer).classList.add('correct-answer');
+                }
+                updateQuizScoreDisplay();
+            }
+
+            function updateQuizScoreDisplay() {
+                quizScoreEl.textContent = `Score: ${quizScore}/${currentQuizQuestionIndex}`;
+                if (currentQuizQuestionIndex === quizQuestions.length) {
+                    quizScoreEl.textContent = `Final Score: ${quizScore}/${quizQuestions.length}`;
+                }
+            }
+
+            nextQuizQuestionBtn.addEventListener('click', () => {
+                currentQuizQuestionIndex++;
+                loadQuizQuestion();
+            });
+            loadQuizQuestion(); // Initial load of the quiz
+
+            // --- 2000s MySpace Profile Details Button Logic (Reverted to interactive-widget) ---
+            // The logic for viewMyspaceProfileBtn is removed, as it's now handled by the general interactive-widget click listener.
+
+
+            // --- 2000s Flash Game Arcade Logic (Reverted) ---
+            const playFlashGameBtn = document.getElementById('play-flash-game');
+            playFlashGameBtn.addEventListener('click', () => {
+                openModal('Flash Game Arcade', '<div class="text-center"><p class="text-xl font-bold mb-4">Loading Office Space Invaders...</p><p class="text-lg text-gray-600">Please wait, this may take a moment on your 56k modem.</p><div class="mt-4 animate-pulse text-blue-500 text-5xl">👾</div><p class="mt-4 text-lg text-red-500">Warning: Flash Player is no longer supported. Game may not load.</p></div>');
+            });
+
+
+            // --- 2010s Startup Pitch Generator Logic ---
+            const generatePitchBtn = document.getElementById('generate-pitch-btn');
+            const pitchOutput = document.getElementById('pitch-output');
+            const startupPitches = [
+                "We're like Uber, but for artisanal staplers.",
+                "It's the Airbnb of office plants.",
+                "Think Netflix, but for motivational corporate training videos.",
+                "We're disrupting the traditional paperclip market with blockchain.",
+                "A social network for your office supplies."
+            ];
+
+            generatePitchBtn.addEventListener('click', () => {
+                const randomPitch = startupPitches[Math.floor(Math.random() * startupPitches.length)];
+                pitchOutput.textContent = `"${randomPitch}"`;
+                achievements.add('pitch-perfect');
+                updateAchievements('2010s');
+            });
+
+
+            // --- 2020s Zoom Bingo Logic ---
+            const bingoWords = [
+                "You're on mute", "[Awkward Silence]", "Can you see my screen?",
+                "Can you hear me now?", "Let's circle back", "My cat just walked across the keyboard",
+                "Next slide, please", "Can everyone see this?", "Sorry, I was talking on mute"
+            ];
+            let bingoBoard = [];
+            let clickedSquares = new Set();
+
+            const bingoBoardEl = document.getElementById('bingo-board');
+            const bingoMessageEl = document.getElementById('bingo-message');
+            const resetBingoBtn = document.getElementById('reset-bingo-btn');
+
+            function initializeBingoBoard() {
+                bingoBoardEl.innerHTML = '';
+                bingoBoard = [];
+                clickedSquares.clear();
+                bingoMessageEl.textContent = '';
+
+                // Shuffle words and populate board
+                const shuffledWords = [...bingoWords].sort(() => 0.5 - Math.random());
+                for (let i = 0; i < 9; i++) {
+                    const square = document.createElement('div');
+                    square.className = 'bingo-square p-2 bg-sky-100 rounded flex items-center justify-center h-16';
+                    square.textContent = shuffledWords[i];
+                    square.dataset.index = i;
+                    square.addEventListener('click', handleBingoSquareClick);
+                    bingoBoardEl.appendChild(square);
+                    bingoBoard.push({ text: shuffledWords[i], clicked: false, element: square });
+                }
+            }
+
+            function handleBingoSquareClick(event) {
+                const index = parseInt(event.target.dataset.index);
+                if (!bingoBoard[index].clicked) {
+                    bingoBoard[index].clicked = true;
+                    event.target.classList.add('clicked');
+                    clickedSquares.add(index);
+                    checkBingo();
+                }
+            }
+
+            function checkBingo() {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                    [0, 4, 8], [2, 4, 6]             // Diagonals
+                ];
+
+                for (const pattern of winPatterns) {
+                    if (pattern.every(index => bingoBoard[index].clicked)) {
+                        bingoMessageEl.textContent = "BINGO! You're a Zoom meeting pro!";
+                        bingoMessageEl.style.color = 'green';
+                        achievements.add('bingo-champ');
+                        updateAchievements('2020s');
+                        // Disable further clicks
+                        bingoBoard.forEach(sq => sq.element.style.pointerEvents = 'none');
+                        return;
+                    }
+                }
+                bingoMessageEl.textContent = "Keep going!";
+                bingoMessageEl.style.color = '';
+            }
+
+            resetBingoBtn.addEventListener('click', initializeBingoBoard);
+            initializeBingoBoard(); // Initial setup for bingo
+
+            // --- Digital Time Capsule (2020s) and Retrieval (2035s) ---
+            const capsuleInput = document.getElementById('capsule-input');
+            const buryCapsuleBtn = document.getElementById('bury-capsule-btn');
+            const capsuleOutput = document.getElementById('capsule-output');
+
+            if (timeCapsuleMessage) {
+                capsuleOutput.innerHTML = `<p class="text-amber-300">"${timeCapsuleMessage}"</p><p class="text-xs text-slate-400 mt-2">- Message from the 2020s</p>`;
+            } else {
+                capsuleOutput.innerHTML = `<p class="text-slate-400">No messages from the past... yet.</p>`;
+            }
+
+            buryCapsuleBtn.addEventListener('click', () => {
+                if (capsuleInput.value.trim()) {
+                    timeCapsuleMessage = capsuleInput.value.trim();
+                    localStorage.setItem('timeCapsuleMessage', timeCapsuleMessage); // Save to localStorage
+                    openModal('Message Buried!', 'Your message has been safely stored in the digital vault!');
+                    achievements.add('capsule-creator');
+                    updateAchievements('2020s');
+                    capsuleInput.value = ''; // Clear input after burying
+                    // Update the 2035s display immediately if in that era
+                    if (mainBody.dataset.currentEra === '2035s') {
+                        capsuleOutput.innerHTML = `<p class="text-amber-300">"${timeCapsuleMessage}"</p><p class="text-xs text-slate-400 mt-2">- Message from the 2020s</p>`;
+                    }
+                } else {
+                    openModal('Input Required', 'Please enter a message before burying the capsule.');
+                }
+            });
+
+            // --- 2020s Wellness Corner Logic (Reverted) ---
+            const startMeditationBtn = document.getElementById('start-meditation-btn');
+            startMeditationBtn.addEventListener('click', () => {
+                openModal('Guided Meditation', '<div class="text-center"><p class="text-xl font-bold mb-4">Finding Your Inner Peace...</p><p class="text-lg text-gray-600">Close your eyes. Breathe deeply. Inhale peace, exhale stress.</p><div class="mt-4 text-green-500 text-5xl animate-pulse">🧘‍♀️</div><p class="mt-4 text-lg text-gray-600">You are doing great!</p></div>');
+            });
+
+
+            // Initial setup
+            updateEra(slider.value);
+            // Manually trigger slider input to position current year display initially
+            const initialPercent = (slider.value - slider.min) / (slider.max - slider.min);
+            const initialSliderWidth = slider.offsetWidth;
+            const initialThumbWidth = 25;
+            const initialOffset = (initialSliderWidth - initialThumbWidth) * initialPercent;
+            currentYearDisplay.style.left = `${initialOffset + initialThumbWidth / 2}px`;
+            currentYearDisplay.textContent = slider.value;
+        });
+    </script>
+</body>
+</html>
